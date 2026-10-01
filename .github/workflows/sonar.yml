@@ -3,16 +3,13 @@ name: SonarCloud Analysis
 on:
   push:
     branches:
-      - main
-      - master
-      - develop
-      - 'feat/**'
+      - '**'
   pull_request:
     types: [opened, synchronize, reopened]
 
 jobs:
   sonarcloud:
-    name: Analisar código com SonarCloud
+    name: Analisar Backend com SonarCloud
     runs-on: ubuntu-latest
     steps:
       - name: Checkout do repositório
@@ -28,6 +25,10 @@ jobs:
 
       - name: Instalar dependências
         run: npm ci
+
+      - name: Executar testes unitários e gerar cobertura (Opcional)
+        run: npx jest --coverage
+        continue-on-error: true
 
       - name: Executar SonarCloud Scan
         uses: SonarSource/sonarqube-scan-action@v4
