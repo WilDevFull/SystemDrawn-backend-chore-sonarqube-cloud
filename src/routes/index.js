@@ -1,3 +1,4 @@
+const simulacaoRoutes = require('./simulacao.routes');
 const session = require("./session");
 const user = require("./user");
 const message = require("./message");
@@ -10,4 +11,5 @@ module.exports = {
   message,
   tarefa,
   estilosTatuagem,
+  simulacaoRoutes 
 };
