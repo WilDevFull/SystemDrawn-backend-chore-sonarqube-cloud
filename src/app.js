@@ -6,7 +6,7 @@ const helmet = require('helmet');
 const morgan = require('morgan');
 const rateLimit = require('express-rate-limit');
 
-// Rotas do projeto (A sua + A da equipe)
+
 const authRoutes = require('./routes/auth.routes');
 const agendamentoRoutes = require('./routes/agendamentoTatuagem.routes');
 const agendamentoPiercingRoutes = require('./routes/agendamentoPiercing.routes');
@@ -15,7 +15,7 @@ const joiaPiercingRoutes = require('./routes/joiaPiercing.routes');
 const notificacoesRoutes = require('./routes/notificacoes');
 const estilosTatuagemRoutes = require('./routes/estilosTatuagem.routes'); // <-- A SUA ROTA AQUI
 
-// Middlewares
+
 const { authenticate } = require('./middlewares/auth.middleware');
 const errorHandler = require('./middlewares/errorHandler.middleware');
 
@@ -41,7 +41,7 @@ if (process.env.NODE_ENV !== 'test') {
   app.use(morgan('combined'));
 }
 
-// Health Check
+
 app.get('/health', (req, res) => {
   res.json({
     success: true,
@@ -50,16 +50,16 @@ app.get('/health', (req, res) => {
   });
 });
 
-// Endpoints principais (A sua + A da equipe)
+
 app.use('/auth', authRoutes);
 app.use('/agendamentos-tatuagem', agendamentoRoutes);
 app.use('/agendamentos-piercing', agendamentoPiercingRoutes);
 app.use('/tipos-piercing', tiposPiercingRoutes);
 app.use('/joias-piercing', joiaPiercingRoutes);
 app.use('/notificacoes', authenticate, notificacoesRoutes);
-app.use('/estilos-tatuagem', estilosTatuagemRoutes); // <-- O SEU ENDPOINT AQUI
+app.use('/estilos-tatuagem', estilosTatuagemRoutes); 
 
-// Middleware 404
+
 app.use((req, res) => {
   res.status(404).json({
     success: false,
@@ -67,7 +67,7 @@ app.use((req, res) => {
   });
 });
 
-// Error Handler
+
 app.use(errorHandler);
 
 const PORT = process.env.PORT || 3000;
