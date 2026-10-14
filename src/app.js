@@ -1,3 +1,4 @@
+
 require('dotenv').config();
 
 const express = require('express');
@@ -6,15 +7,14 @@ const helmet = require('helmet');
 const morgan = require('morgan');
 const rateLimit = require('express-rate-limit');
 
-
 const authRoutes = require('./routes/auth.routes');
 const agendamentoRoutes = require('./routes/agendamentoTatuagem.routes');
 const agendamentoPiercingRoutes = require('./routes/agendamentoPiercing.routes');
 const tiposPiercingRoutes = require('./routes/tiposPiercing.routes');
 const joiaPiercingRoutes = require('./routes/joiaPiercing.routes');
 const notificacoesRoutes = require('./routes/notificacoes');
-const estilosTatuagemRoutes = require('./routes/estilosTatuagem.routes'); // <-- A SUA ROTA AQUI
-
+const estilosTatuagemRoutes = require('./routes/estilosTatuagem.routes');
+const simulacaoRoutes = require('./routes/simulacao.routes'); 
 
 const { authenticate } = require('./middlewares/auth.middleware');
 const errorHandler = require('./middlewares/errorHandler.middleware');
@@ -34,13 +34,14 @@ const limiter = rateLimit({
 });
 
 app.use(limiter);
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+
+
+app.use(express.json({ limit: '100mb' }));
+app.use(express.urlencoded({ limit: '100mb', extended: true }));
 
 if (process.env.NODE_ENV !== 'test') {
   app.use(morgan('combined'));
 }
-
 
 app.get('/health', (req, res) => {
   res.json({
@@ -50,15 +51,14 @@ app.get('/health', (req, res) => {
   });
 });
 
-
 app.use('/auth', authRoutes);
 app.use('/agendamentos-tatuagem', agendamentoRoutes);
 app.use('/agendamentos-piercing', agendamentoPiercingRoutes);
 app.use('/tipos-piercing', tiposPiercingRoutes);
 app.use('/joias-piercing', joiaPiercingRoutes);
 app.use('/notificacoes', authenticate, notificacoesRoutes);
-app.use('/estilos-tatuagem', estilosTatuagemRoutes); 
-
+app.use('/estilos-tatuagem', estilosTatuagemRoutes);
+app.use('/simulacao', simulacaoRoutes); 
 
 app.use((req, res) => {
   res.status(404).json({
@@ -66,7 +66,6 @@ app.use((req, res) => {
     message: 'Rota não encontrada.',
   });
 });
-
 
 app.use(errorHandler);
 
