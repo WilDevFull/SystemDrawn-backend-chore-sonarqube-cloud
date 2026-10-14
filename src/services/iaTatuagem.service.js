@@ -1,44 +1,44 @@
 
 const HUGGINGFACE_API_URL = "https://api-inference.huggingface.co/models/lllyasviel/sd-controlnet-canny";
 
-const HUGGINGFACE_API_KEY = process.env.HUGGINGFACE_API_KEY;
-
 async function gerarSimulacao(imagemCorpoBase64, promptText) {
     
+
     if (!HUGGINGFACE_API_KEY) {
         throw new Error("Chave do Hugging Face não encontrada. Verifique seu arquivo .env");
     }
 
-    
+  
+    const base64Limpo = imagemCorpoBase64.replace(/^data:image\/\w+;base64,/, "");
+
     const resposta = await fetch(HUGGINGFACE_API_URL, {
-        method: "POST", // POST significa que estamos ENVIANDO dados
+        method: "POST",
         headers: {
-            "Authorization": `Bearer ${HUGGINGFACE_API_KEY}`, // Nossa "carteirinha de acesso"
+            "Authorization": `Bearer ${HUGGINGFACE_API_KEY}`,
             "Content-Type": "application/json",
         },
         body: JSON.stringify({
-            
             inputs: promptText || "photorealistic black ink tattoo applied on human skin",
-            
-            image: imagemCorpoBase64 
+            image: base64Limpo,
+            options: {
+               
+                wait_for_model: true 
+            }
         }),
     });
 
     
     if (!resposta.ok) {
-        throw new Error("Erro na comunicação com a API do Hugging Face. Tente novamente.");
+        const detalheDoErro = await resposta.text();
+        console.error("Detalhe do erro vindo do Hugging Face:", detalheDoErro);
+        throw new Error(`Erro na API do Hugging Face (Status ${resposta.status})`);
     }
 
-    
     const imageBuffer = await resposta.arrayBuffer();
-    
-    
     const base64Gerado = Buffer.from(imageBuffer).toString('base64');
-    const imagemProntaParaOFrontend = `data:image/jpeg;base64,${base64Gerado}`;
-
-    return imagemProntaParaOFrontend;
+    
+    return `data:image/jpeg;base64,${base64Gerado}`;
 }
-
 
 module.exports = {
     gerarSimulacao
