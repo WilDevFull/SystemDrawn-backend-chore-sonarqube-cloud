@@ -3,12 +3,12 @@ const HUGGINGFACE_API_URL = "https://api-inference.huggingface.co/models/lllyasv
 
 async function gerarSimulacao(imagemCorpoBase64, promptText) {
     
+    const HUGGINGFACE_API_KEY = process.env.HUGGINGFACE_API_KEY;
 
     if (!HUGGINGFACE_API_KEY) {
         throw new Error("Chave do Hugging Face não encontrada. Verifique seu arquivo .env");
     }
 
-  
     const base64Limpo = imagemCorpoBase64.replace(/^data:image\/\w+;base64,/, "");
 
     const resposta = await fetch(HUGGINGFACE_API_URL, {
@@ -21,13 +21,11 @@ async function gerarSimulacao(imagemCorpoBase64, promptText) {
             inputs: promptText || "photorealistic black ink tattoo applied on human skin",
             image: base64Limpo,
             options: {
-               
                 wait_for_model: true 
             }
         }),
     });
 
-    
     if (!resposta.ok) {
         const detalheDoErro = await resposta.text();
         console.error("Detalhe do erro vindo do Hugging Face:", detalheDoErro);
